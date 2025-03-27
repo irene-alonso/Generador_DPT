@@ -209,50 +209,7 @@
       );
 
       const empresa = "Applus";
-      // Aquí definimos las descripciones de puesto existentes como un objeto
-      const existingDescriptions = {
-        "Desarrollador de Software Junior": {
-          funciones: [
-            "Participar en el desarrollo de aplicaciones de software.",
-            "Escribir código limpio y eficiente.",
-            "Colaborar con el equipo en el diseño de soluciones.",
-          ],
-          necesidades:
-            "Conocimientos básicos de programación. Capacidad de aprendizaje. Trabajo en equipo.",
-          aptitudes: [
-            "Pensamiento lógico",
-            "Resolución de problemas",
-            "Comunicación",
-          ],
-          experiencia: "0-2 años",
-        },
-        "Analista de Datos": {
-          funciones: [
-            "Recopilar y analizar datos.",
-            "Identificar tendencias y patrones.",
-            "Elaborar informes y visualizaciones.",
-          ],
-          necesidades:
-            "Conocimientos de estadística y bases de datos. Manejo de herramientas de análisis de datos.",
-          aptitudes: [
-            "Pensamiento analítico",
-            "Atención al detalle",
-            "Comunicación",
-          ],
-          experiencia: "2-4 años",
-        },
-        "Gerente de Proyecto": {
-          funciones: [
-            "Planificar, ejecutar y cerrar proyectos.",
-            "Gestionar el equipo y los recursos.",
-            "Comunicar el progreso del proyecto a los stakeholders.",
-          ],
-          necesidades:
-            "Experiencia en gestión de proyectos. Liderazgo. Habilidades de comunicación.",
-          aptitudes: ["Liderazgo", "Organización", "Comunicación", "Negociación"],
-          experiencia: "5+ años",
-        },
-      };
+      let existingDescriptions = {}; // Cambiamos a un objeto vacío inicialmente
 
       function showError(inputElement, message) {
         const errorDiv = document.getElementById(inputElement.id + "Error");
@@ -271,6 +228,31 @@
         }
       }
 
+      function loadDescriptions() {
+        // Usamos una petición fetch para cargar el archivo JSON.  Asegúrate de que el path es correcto.
+        fetch("dpt.json")  // El nombre del archivo es dpt.json
+          .then((response) => {
+            if (!response.ok) {
+              throw new Error(`HTTP error! status: ${response.status}`);
+            }
+            return response.json();
+          })
+          .then((data) => {
+            existingDescriptions = data; // Asignamos los datos cargados a la variable
+            console.log("DPTs cargadas correctamente:", existingDescriptions); // Para debugging
+          })
+          .catch((error) => {
+            console.error("Error al cargar las DPTs:", error);
+            // Aquí podrías mostrar un mensaje de error al usuario
+            alert(
+              "No se pudieron cargar las descripciones de puesto. La aplicación puede que no funcione correctamente."
+            );
+          });
+      }
+
+      // Llamamos a la función para cargar las descripciones cuando se carga la página.
+      window.onload = loadDescriptions;
+
       jobProfileForm.addEventListener("submit", (event) => {
         event.preventDefault();
 
@@ -278,7 +260,6 @@
         const jobDescriptionInput = document.getElementById("jobDescription");
         const jobTitle = jobTitleInput.value.trim();
         const jobDescription = jobDescriptionInput.value.trim();
-
 
         if (!jobTitle) {
           showError(jobTitleInput, "Por favor, ingrese un título de puesto.");
@@ -300,9 +281,21 @@
         outputJobTitle.textContent = jobTitle;
         outputJobDescription.textContent = jobDescription;
 
-        const generatedFunctions = generateFunctions(jobTitle, empresa, existingDescriptions);
-        const generatedNeeds = generateNeeds(jobTitle, empresa, existingDescriptions);
-        const generatedSkills = generateSkills(jobTitle, empresa, existingDescriptions);
+        const generatedFunctions = generateFunctions(
+          jobTitle,
+          empresa,
+          existingDescriptions
+        );
+        const generatedNeeds = generateNeeds(
+          jobTitle,
+          empresa,
+          existingDescriptions
+        );
+        const generatedSkills = generateSkills(
+          jobTitle,
+          empresa,
+          existingDescriptions
+        );
         const generatedExperience = generateExperience(
           jobTitle,
           empresa,
@@ -428,17 +421,29 @@
           experienciaPersonalizada = puestoExistente.experiencia;
         }
         if (jobTitle.toLowerCase().includes("senior")) {
-          return experienciaPersonalizada || "5+ años de experiencia en el desarrollo de software.";
+          return (
+            experienciaPersonalizada || "5+ años de experiencia en el desarrollo de software."
+          );
         } else if (jobTitle.toLowerCase().includes("semi-senior")) {
-          return experienciaPersonalizada || "2-5 años de experiencia en el desarrollo de software.";
+          return (
+            experienciaPersonalizada || "2-5 años de experiencia en el desarrollo de software."
+          );
         } else if (jobTitle.toLowerCase().includes("junior")) {
-          return experienciaPersonalizada || "0-2 años de experiencia en el desarrollo de software.";
+          return (
+            experienciaPersonalizada || "0-2 años de experiencia en el desarrollo de software."
+          );
         } else if (jobTitle.toLowerCase().includes("experto")) {
-          return experienciaPersonalizada || "Más de 10 años de experiencia en el desarrollo de software.";
+          return (
+            experienciaPersonalizada ||
+            "Más de 10 años de experiencia en el desarrollo de software."
+          );
         } else {
-          return experienciaPersonalizada || "3+ años de experiencia en el desarrollo de software.";
+          return (
+            experienciaPersonalizada || "3+ años de experiencia en el desarrollo de software."
+          );
         }
       }
     </script>
   </body>
 </html>
+
