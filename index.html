@@ -4,12 +4,16 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Generador de Perfiles de Puesto con IA</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap"
+      rel="stylesheet"
+    />
     <style>
       /* Estilos generales */
       body {
         font-family: 'Inter', sans-serif;
-        background-color: #f3f0e8; /* Color de fondo claro */
+        background-color: #f3f0e8;
+        /* Color de fondo claro */
         color: #333;
         margin: 0;
         padding: 0;
@@ -22,7 +26,8 @@
       h1 {
         font-size: 2.5rem;
         font-weight: bold;
-        color: #ff6600; /* Naranja Applus */
+        color: #ff6600;
+        /* Naranja Applus */
         text-align: center;
         margin-bottom: 2rem;
       }
@@ -56,7 +61,8 @@
       textarea:focus,
       select:focus {
         outline: none;
-        border-color: #ff6600; /* Naranja Applus */
+        border-color: #ff6600;
+        /* Naranja Applus */
         box-shadow: 0 0 0 3px rgba(255, 102, 0, 0.1);
       }
       textarea {
@@ -64,7 +70,8 @@
         height: 8rem;
       }
       button {
-        background-color: #ff6600; /* Naranja Applus */
+        background-color: #ff6600;
+        /* Naranja Applus */
         color: #fff;
         padding: 0.75rem 1.5rem;
         border: none;
@@ -76,15 +83,18 @@
         width: 100%;
       }
       button:hover {
-        background-color: #cc5200; /* Naranja más oscuro */
+        background-color: #cc5200;
+        /* Naranja más oscuro */
       }
       #results {
         margin-top: 2rem;
         padding: 1.5rem;
-        background-color: #fff; /* Fondo blanco para los resultados */
+        background-color: #fff;
+        /* Fondo blanco para los resultados */
         border-radius: 0.5rem;
         border: 1px solid #bdc3c7;
-        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Sombra suave */
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        /* Sombra suave */
       }
       #results h2 {
         font-size: 1.5rem;
@@ -118,7 +128,8 @@
         display: none;
         text-align: center;
         margin-top: 1rem;
-        color: #ff6600; /* Naranja Applus */
+        color: #ff6600;
+        /* Naranja Applus */
         font-size: 1.2rem;
         font-weight: bold;
       }
@@ -126,7 +137,8 @@
         display: block;
         margin-left: auto;
         margin-right: auto;
-        width: 150px; /* Ajusta el ancho del logo según sea necesario */
+        width: 150px;
+        /* Ajusta el ancho del logo según sea necesario */
         margin-bottom: 1rem;
       }
     </style>
@@ -266,9 +278,10 @@
         }
       }
       function loadDescriptions() {
-        fetch(
-          "https://github.com/irene-alonso/Generador_DPT/blob/main/dpt.json"
-        ) // Reemplaza con la URL de tu archivo dpt.json
+        const githubRawUrl =
+          "https://raw.githubusercontent.com/irene-alonso/Generador_DPT/main/dpt.json";
+
+        fetch(githubRawUrl)
           .then((response) => {
             if (!response.ok) {
               throw new Error(`HTTP error! status: ${response.status}`);
@@ -286,12 +299,14 @@
           });
       }
       window.onload = loadDescriptions;
+
       jobProfileForm.addEventListener("submit", (event) => {
-        event.preventDefault();
+        event.preventDefault(); // Previene la recarga de la página
         const jobTitleInput = document.getElementById("jobTitle");
         const jobDescriptionInput = document.getElementById("jobDescription");
         const jobTitle = jobTitleInput.value.trim();
         const jobDescription = jobDescriptionInput.value.trim();
+
         if (!jobTitle) {
           showError(jobTitleInput, "Por favor, ingrese un título de puesto.");
           return;
@@ -307,10 +322,11 @@
         } else {
           hideError(jobDescriptionInput);
         }
+
         outputJobTitle.textContent = jobTitle;
         outputJobDescription.textContent = jobDescription;
-        loadingDiv.style.display = "block"; // Mostrar "Pensando..."
-        resultsDiv.classList.add("hidden"); // Ocultar resultados anteriores
+        loadingDiv.style.display = "block";
+        resultsDiv.classList.add("hidden");
 
         generateAIProfile(jobTitle, jobDescription)
           .then((aiResponse) => {
@@ -354,14 +370,14 @@
             });
             outputExperienceLevel.textContent = generatedExperience;
             resultsDiv.classList.remove("hidden");
-            loadingDiv.style.display = "none"; // Ocultar "Pensando..."
+            loadingDiv.style.display = "none";
           })
           .catch((error) => {
             console.error("Error al generar el perfil con IA:", error);
             alert(
               "No se pudo generar el perfil del puesto con la IA. Se mostrará la versión básica."
             );
-            // Mostrar la versión básica del perfil del puesto
+
             const generatedFunctions = generateFunctions(
               jobTitle,
               empresa,
@@ -398,13 +414,13 @@
             });
             outputExperienceLevel.textContent = generatedExperience;
             resultsDiv.classList.remove("hidden");
-            loadingDiv.style.display = "none"; // Ocultar "Pensando..."
+            loadingDiv.style.display = "none";
           });
       });
+
       async function generateAIProfile(jobTitle, jobDescription) {
-        // Llamada a Hugging Face Inference API
-        const API_TOKEN = "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"; // Reemplaza con tu token de Hugging Face
-        const modelName = "mistralai/Mixtral-8x7B-Instruct-v0.1"; // Elige un modelo adecuado
+        const API_TOKEN = "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";
+        const modelName = "mistralai/Mixtral-8x7B-Instruct-v0.1";
 
         const payload = {
           inputs: `Genera un perfil de puesto detallado para ${jobTitle} con la siguiente descripción: ${jobDescription}`,
@@ -434,19 +450,27 @@
             );
           }
           const data = await response.json();
-          const aiResponse = {
-            funciones: extractFunctions(data[0].generated_text),
-            necesidades: extractNeeds(data[0].generated_text),
-            aptitudes: extractSkills(data[0].generated_text),
-            experiencia: extractExperience(data[0].generated_text),
-          };
-          return aiResponse;
+
+          // Verificar la estructura de la respuesta de la API
+          if (data && data[0] && data[0].generated_text) {
+            const aiResponse = {
+              funciones: extractFunctions(data[0].generated_text),
+              necesidades: extractNeeds(data[0].generated_text),
+              aptitudes: extractSkills(data[0].generated_text),
+              experiencia: extractExperience(data[0].generated_text),
+            };
+            return aiResponse;
+          } else {
+            throw new Error(
+              "La respuesta de la API de Hugging Face tiene un formato inesperado."
+            );
+          }
         } catch (error) {
           console.error(
             "Error al obtener la descripción del puesto de la API de Hugging Face:",
             error
           );
-          throw error; // Reenvía el error para que lo capture el .catch del formulario
+          throw error;
         }
       }
       function extractFunctions(text) {
@@ -640,7 +664,8 @@
         }
         if (jobTitle.toLowerCase().includes("senior")) {
           return (
-            experienciaPersonalizada || "5+ años de experiencia en el desarrollo de software."
+            experienciaPersonalizada ||
+            "5+ años de experiencia en el desarrollo de software."
           );
         } else if (jobTitle.toLowerCase().includes("semi-senior")) {
           return (
@@ -649,4 +674,16 @@
           );
         } else if (jobTitle.toLowerCase().includes("junior")) {
           return (
-            experienciaPersonaliz
+            experienciaPersonalizada ||
+            "0-2 años de experiencia en el desarrollo de software."
+          );
+        } else {
+          return (
+            experienciaPersonalizada ||
+            "Experiencia en el desarrollo de software."
+          );
+        }
+      }
+    </script>
+  </body>
+</html>
