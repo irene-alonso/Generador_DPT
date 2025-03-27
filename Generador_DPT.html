@@ -193,7 +193,6 @@
         </div>
       </div>
     </div>
-
     <script>
       const jobProfileForm = document.getElementById("jobProfileForm");
       const resultsDiv = document.getElementById("results");
@@ -207,10 +206,8 @@
       const outputExperienceLevel = document.getElementById(
         "outputExperienceLevel"
       );
-
       const empresa = "Applus";
-      let existingDescriptions = {}; // Cambiamos a un objeto vacío inicialmente
-
+      let existingDescriptions = {};
       function showError(inputElement, message) {
         const errorDiv = document.getElementById(inputElement.id + "Error");
         if (errorDiv) {
@@ -219,7 +216,6 @@
           inputElement.classList.add("border-red-500");
         }
       }
-
       function hideError(inputElement) {
         const errorDiv = document.getElementById(inputElement.id + "Error");
         if (errorDiv) {
@@ -227,10 +223,8 @@
           inputElement.classList.remove("border-red-500");
         }
       }
-
       function loadDescriptions() {
-        // Usamos una petición fetch para cargar el archivo JSON.  Asegúrate de que el path es correcto.
-        fetch("dpt.json")  // El nombre del archivo es dpt.json
+        fetch("dpt.json")
           .then((response) => {
             if (!response.ok) {
               throw new Error(`HTTP error! status: ${response.status}`);
@@ -238,36 +232,28 @@
             return response.json();
           })
           .then((data) => {
-            existingDescriptions = data; // Asignamos los datos cargados a la variable
-            console.log("DPTs cargadas correctamente:", existingDescriptions); // Para debugging
+            existingDescriptions = data;
           })
           .catch((error) => {
             console.error("Error al cargar las DPTs:", error);
-            // Aquí podrías mostrar un mensaje de error al usuario
             alert(
               "No se pudieron cargar las descripciones de puesto. La aplicación puede que no funcione correctamente."
             );
           });
       }
-
-      // Llamamos a la función para cargar las descripciones cuando se carga la página.
       window.onload = loadDescriptions;
-
       jobProfileForm.addEventListener("submit", (event) => {
         event.preventDefault();
-
         const jobTitleInput = document.getElementById("jobTitle");
         const jobDescriptionInput = document.getElementById("jobDescription");
         const jobTitle = jobTitleInput.value.trim();
         const jobDescription = jobDescriptionInput.value.trim();
-
         if (!jobTitle) {
           showError(jobTitleInput, "Por favor, ingrese un título de puesto.");
           return;
         } else {
           hideError(jobTitleInput);
         }
-
         if (!jobDescription) {
           showError(
             jobDescriptionInput,
@@ -277,10 +263,8 @@
         } else {
           hideError(jobDescriptionInput);
         }
-
         outputJobTitle.textContent = jobTitle;
         outputJobDescription.textContent = jobDescription;
-
         const generatedFunctions = generateFunctions(
           jobTitle,
           empresa,
@@ -301,28 +285,22 @@
           empresa,
           existingDescriptions
         );
-
         outputJobFunctionsList.innerHTML = "";
         generatedFunctions.forEach((func) => {
           const li = document.createElement("li");
           li.textContent = func;
           outputJobFunctionsList.appendChild(li);
         });
-
         outputJobNeeds.textContent = generatedNeeds;
-
         outputJobSkillsList.innerHTML = "";
         generatedSkills.forEach((skill) => {
           const li = document.createElement("li");
           li.textContent = skill;
           outputJobSkillsList.appendChild(li);
         });
-
         outputExperienceLevel.textContent = generatedExperience;
-
         resultsDiv.classList.remove("hidden");
       });
-
       function generateFunctions(jobTitle, empresa, existingDescriptions) {
         const funcionesBase = [
           `Colaborar con el equipo de ${empresa} para definir los requisitos del proyecto.`,
@@ -332,9 +310,7 @@
           "Documentar el código y los procesos de desarrollo.",
           "Mantenerse actualizado sobre las nuevas tecnologías y tendencias.",
         ];
-
         let funcionesPersonalizadas = [...funcionesBase];
-
         const puestoExistente = existingDescriptions[jobTitle];
         if (puestoExistente) {
           funcionesPersonalizadas = [
@@ -342,7 +318,6 @@
             ...puestoExistente.funciones,
           ];
         }
-
         if (jobTitle.toLowerCase().includes("senior")) {
           return [
             ...funcionesPersonalizadas,
@@ -361,12 +336,10 @@
           return funcionesPersonalizadas;
         }
       }
-
       function generateNeeds(jobTitle, empresa, existingDescriptions) {
         const needsBase = `Experiencia en el desarrollo de aplicaciones de software para ${empresa}. Conocimientos sólidos de bases de datos y principios de diseño de software.`;
         let necesidadesPersonalizadas = needsBase;
         const puestoExistente = existingDescriptions[jobTitle];
-
         if (puestoExistente) {
           necesidadesPersonalizadas = puestoExistente.necesidades;
         }
@@ -380,7 +353,6 @@
           return necesidadesPersonalizadas;
         }
       }
-
       function generateSkills(jobTitle, empresa, existingDescriptions) {
         const habilidadesBase = [
           "Pensamiento analítico y resolución de problemas.",
@@ -392,9 +364,11 @@
         let habilidadesPersonalizadas = [...habilidadesBase];
         const puestoExistente = existingDescriptions[jobTitle];
         if (puestoExistente) {
-          habilidadesPersonalizadas = [...habilidadesBase, ...puestoExistente.aptitudes];
+          habilidadesPersonalizadas = [
+            ...habilidadesBase,
+            ...puestoExistente.aptitudes,
+          ];
         }
-
         if (jobTitle.toLowerCase().includes("lider")) {
           return [
             ...habilidadesPersonalizadas,
@@ -413,7 +387,6 @@
           return habilidadesPersonalizadas;
         }
       }
-
       function generateExperience(jobTitle, empresa, existingDescriptions) {
         let experienciaPersonalizada = "";
         const puestoExistente = existingDescriptions[jobTitle];
@@ -422,15 +395,18 @@
         }
         if (jobTitle.toLowerCase().includes("senior")) {
           return (
-            experienciaPersonalizada || "5+ años de experiencia en el desarrollo de software."
+            experienciaPersonalizada ||
+            "5+ años de experiencia en el desarrollo de software."
           );
         } else if (jobTitle.toLowerCase().includes("semi-senior")) {
           return (
-            experienciaPersonalizada || "2-5 años de experiencia en el desarrollo de software."
+            experienciaPersonalizada ||
+            "2-5 años de experiencia en el desarrollo de software."
           );
         } else if (jobTitle.toLowerCase().includes("junior")) {
           return (
-            experienciaPersonalizada || "0-2 años de experiencia en el desarrollo de software."
+            experienciaPersonalizada ||
+            "0-2 años de experiencia en el desarrollo de software."
           );
         } else if (jobTitle.toLowerCase().includes("experto")) {
           return (
@@ -439,11 +415,11 @@
           );
         } else {
           return (
-            experienciaPersonalizada || "3+ años de experiencia en el desarrollo de software."
+            experienciaPersonalizada ||
+            "3+ años de experiencia en el desarrollo de software."
           );
         }
       }
     </script>
   </body>
 </html>
-
