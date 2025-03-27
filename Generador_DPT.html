@@ -1,0 +1,368 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Generador de Perfiles de Puesto</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet" />
+    <style>
+      /* Estilos generales */
+      body {
+        font-family: 'Inter', sans-serif;
+        background-color: #f9f9f9;
+        color: #333;
+        margin: 0;
+        padding: 0;
+      }
+      .container {
+        max-width: 800px;
+        margin: 0 auto;
+        padding: 20px;
+      }
+      h1 {
+        font-size: 2.5rem;
+        font-weight: bold;
+        color: #007bff;
+        text-align: center;
+        margin-bottom: 2rem;
+      }
+      h2 {
+        font-size: 2rem;
+        font-weight: bold;
+        color: #2c3e50;
+        margin-bottom: 1.5rem;
+      }
+      label {
+        display: block;
+        font-size: 1.2rem;
+        font-weight: 600;
+        color: #34495e;
+        margin-bottom: 0.5rem;
+      }
+      input[type="text"],
+      textarea,
+      select {
+        width: 100%;
+        padding: 0.75rem;
+        border: 1px solid #bdc3c7;
+        border-radius: 0.5rem;
+        font-size: 1rem;
+        color: #2c3e50;
+        margin-bottom: 1rem;
+        transition: border-color 0.3s ease;
+        box-sizing: border-box;
+      }
+      input[type="text"]:focus,
+      textarea:focus,
+      select:focus {
+        outline: none;
+        border-color: #007bff;
+        box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.1);
+      }
+      textarea {
+        resize: vertical;
+        height: 8rem;
+      }
+      button {
+        background-color: #007bff;
+        color: #fff;
+        padding: 0.75rem 1.5rem;
+        border: none;
+        border-radius: 0.5rem;
+        font-size: 1.1rem;
+        font-weight: bold;
+        cursor: pointer;
+        transition: background-color 0.3s ease;
+        width: 100%;
+      }
+      button:hover {
+        background-color: #0056b3;
+      }
+      #results {
+        margin-top: 2rem;
+        padding: 1.5rem;
+        background-color: #ecf0f1;
+        border-radius: 0.5rem;
+        border: 1px solid #bdc3c7;
+      }
+      #results h2 {
+        font-size: 1.5rem;
+        color: #2c3e50;
+        margin-bottom: 1rem;
+      }
+      #results p {
+        font-size: 1rem;
+        color: #34495e;
+        margin-bottom: 0.75rem;
+      }
+      #results ul {
+        list-style: disc;
+        padding-left: 2rem;
+        margin-bottom: 0.75rem;
+      }
+      #results li {
+        font-size: 1rem;
+        color: #34495e;
+        margin-bottom: 0.5rem;
+      }
+      .hidden {
+        display: none;
+      }
+      .error-message {
+        color: #ff0000;
+        font-size: 0.9rem;
+        margin-top: 0.5rem;
+      }
+    </style>
+  </head>
+  <body class="bg-gray-100 font-inter antialiased">
+    <div class="container">
+      <h1 class="text-3xl font-semibold text-blue-600 text-center mb-6">
+        Generador de Perfiles de Puesto
+      </h1>
+
+      <div class="bg-white rounded-lg shadow-md p-8">
+        <form id="jobProfileForm" class="space-y-6">
+          <div>
+            <label for="jobTitle" class="block text-gray-700 text-sm font-bold mb-2">
+              Título del Puesto:
+            </label>
+            <input
+              type="text"
+              id="jobTitle"
+              placeholder="Ej: Desarrollador de Software Senior"
+              required
+              class="shadow appearance-none border rounded w-full py-3 px-4 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+            />
+            <div id="jobTitleError" class="error-message hidden">
+              Por favor, ingrese un título de puesto.
+            </div>
+          </div>
+
+          <div>
+            <label for="jobDescription" class="block text-gray-700 text-sm font-bold mb-2">
+              Descripción del Puesto:
+            </label>
+            <textarea
+              id="jobDescription"
+              placeholder="Ej: Buscamos un Desarrollador de Software Senior para unirse a nuestro equipo y liderar el desarrollo de nuevas funcionalidades."
+              required
+              class="shadow appearance-none border rounded w-full py-3 px-4 text-gray-700 leading-tight focus:outline-none focus:shadow-outline h-32 resize-y"
+            ></textarea>
+            <div id="jobDescriptionError" class="error-message hidden">
+              Por favor, ingrese una descripción del puesto.
+            </div>
+            <p class="text-gray-500 text-xs italic">
+              Proporcione una descripción breve del propósito y las responsabilidades
+              generales del puesto.
+            </p>
+          </div>
+
+          <button
+            type="submit"
+            class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-3 px-6 rounded-md shadow-md focus:outline-none focus:shadow-outline transition-colors duration-300 w-full"
+          >
+            Generar Perfil de Puesto
+          </button>
+        </form>
+
+        <div id="results" class="mt-8 p-6 bg-gray-50 rounded-lg shadow-sm border border-gray-200 hidden">
+          <h2 class="text-2xl font-semibold text-gray-800 mb-4">
+            Perfil de Puesto Generado
+          </h2>
+          <div id="jobProfileOutput" class="space-y-4">
+            <h3 class="text-xl font-semibold text-blue-600">Título del Puesto:</h3>
+            <p id="outputJobTitle" class="text-gray-700"></p>
+            <h3 class="text-xl font-semibold text-blue-600">Descripción:</h3>
+            <p id="outputJobDescription" class="text-gray-700"></p>
+            <h3 class="text-xl font-semibold text-blue-600">Funciones del Puesto:</h3>
+            <ul id="outputJobFunctions" class="list-disc list-inside text-gray-700"></ul>
+            <h3 class="text-xl font-semibold text-blue-600">
+              Necesidades del Puesto:
+            </h3>
+            <p id="outputJobNeeds" class="text-gray-700"></p>
+            <h3 class="text-xl font-semibold text-blue-600">
+              Aptitudes Requeridas:
+            </h3>
+            <ul id="outputJobSkills" class="list-disc list-inside text-gray-700"></ul>
+            <h3 class="text-xl font-semibold text-blue-600">
+              Nivel de Experiencia:
+            </h3>
+            <p id="outputExperienceLevel" class="text-gray-700"></p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      const jobProfileForm = document.getElementById("jobProfileForm");
+      const resultsDiv = document.getElementById("results");
+      const outputJobTitle = document.getElementById("outputJobTitle");
+      const outputJobDescription = document.getElementById("outputJobDescription");
+      const outputJobFunctionsList = document.getElementById(
+        "outputJobFunctions"
+      );
+      const outputJobNeeds = document.getElementById("outputJobNeeds");
+      const outputJobSkillsList = document.getElementById("outputJobSkillsList");
+      const outputExperienceLevel = document.getElementById(
+        "outputExperienceLevel"
+      );
+
+      const empresa = "Applus";
+
+      function showError(inputElement, message) {
+        const errorDiv = document.getElementById(inputElement.id + "Error");
+        if (errorDiv) {
+          errorDiv.textContent = message;
+          errorDiv.classList.remove("hidden");
+          inputElement.classList.add("border-red-500");
+        }
+      }
+
+      function hideError(inputElement) {
+        const errorDiv = document.getElementById(inputElement.id + "Error");
+        if (errorDiv) {
+          errorDiv.classList.add("hidden");
+          inputElement.classList.remove("border-red-500");
+        }
+      }
+
+      jobProfileForm.addEventListener("submit", (event) => {
+        event.preventDefault();
+
+        const jobTitle = document.getElementById("jobTitle");
+        const jobDescription = document.getElementById("jobDescription");
+
+        if (!jobTitle.value.trim()) {
+          showError(jobTitle, "Por favor, ingrese un título de puesto.");
+          return;
+        } else {
+          hideError(jobTitle);
+        }
+
+        if (!jobDescription.value.trim()) {
+          showError(
+            jobDescription,
+            "Por favor, ingrese una descripción del puesto."
+          );
+          return;
+        } else {
+          hideError(jobDescription);
+        }
+
+        outputJobTitle.textContent = jobTitle.value;
+        outputJobDescription.textContent = jobDescription.value;
+
+        const generatedFunctions = generateFunctions(jobTitle.value, empresa);
+        const generatedNeeds = generateNeeds(jobTitle.value, empresa);
+        const generatedSkills = generateSkills(jobTitle.value, empresa);
+        const generatedExperience = generateExperience(jobTitle.value, empresa);
+
+        outputJobFunctionsList.innerHTML = "";
+        generatedFunctions.forEach((func) => {
+          const li = document.createElement("li");
+          li.textContent = func;
+          outputJobFunctionsList.appendChild(li);
+        });
+
+        outputJobNeeds.textContent = generatedNeeds;
+
+        outputJobSkillsList.innerHTML = "";
+        generatedSkills.forEach((skill) => {
+          const li = document.createElement("li");
+          li.textContent = skill;
+          outputJobSkillsList.appendChild(li);
+        });
+
+        outputExperienceLevel.textContent = generatedExperience;
+
+        resultsDiv.classList.remove("hidden");
+      });
+
+      function generateFunctions(jobTitle, empresa) {
+        const funcionesBase = [
+          `Colaborar con el equipo de ${empresa} para definir los requisitos del proyecto.`,
+          `Diseñar, desarrollar y mantener aplicaciones de software para ${empresa}.`,
+          "Realizar pruebas y depuración del código.",
+          "Participar en la revisión del código de otros desarrolladores.",
+          "Documentar el código y los procesos de desarrollo.",
+          "Mantenerse actualizado sobre las nuevas tecnologías y tendencias.",
+        ];
+
+        if (jobTitle.toLowerCase().includes("senior")) {
+          return [
+            ...funcionesBase,
+            `Liderar y mentorizar a desarrolladores junior en ${empresa}.`,
+            "Tomar decisiones técnicas clave sobre la arquitectura del software.",
+            "Optimizar el rendimiento y la escalabilidad de las aplicaciones.",
+          ];
+        } else if (jobTitle.toLowerCase().includes("junior")) {
+          return [
+            ...funcionesBase.slice(0, 3),
+            "Aprender y aplicar las mejores prácticas de desarrollo de software.",
+            `Recibir mentoría de desarrolladores senior en ${empresa}.`,
+            "Contribuir al desarrollo de funcionalidades de menor complejidad.",
+          ];
+        } else {
+          return funcionesBase;
+        }
+      }
+
+      function generateNeeds(jobTitle, empresa) {
+        const needsBase = `Experiencia en el desarrollo de aplicaciones de software para ${empresa}. Conocimientos sólidos de bases de datos y principios de diseño de software.`;
+
+        if (jobTitle.toLowerCase().includes("full stack")) {
+          return `${needsBase} Experiencia en el desarrollo de aplicaciones web tanto en el lado del cliente como del servidor. Conocimientos sólidos de bases de datos, APIs y frameworks de desarrollo web.`;
+        } else if (jobTitle.toLowerCase().includes("frontend")) {
+          return `${needsBase} Experiencia en el desarrollo de interfaces de usuario con HTML, CSS y JavaScript. Conocimiento de frameworks de JavaScript modernos como React, Angular o Vue.js.`;
+        } else if (jobTitle.toLowerCase().includes("backend")) {
+          return `${needsBase} Experiencia en el desarrollo de la lógica del servidor con lenguajes como Java, Python o Node.js. Conocimientos sólidos de bases de datos y APIs REST.`;
+        } else {
+          return needsBase;
+        }
+      }
+
+      function generateSkills(jobTitle, empresa) {
+        const habilidadesBase = [
+          "Pensamiento analítico y resolución de problemas.",
+          "Atención al detalle y capacidad de organización.",
+          "Comunicación efectiva y capacidad para trabajar en equipo.",
+          "Proactividad e iniciativa.",
+          "Capacidad de aprendizaje y adaptación.",
+        ];
+
+        if (jobTitle.toLowerCase().includes("lider")) {
+          return [
+            ...habilidadesBase,
+            "Liderazgo y gestión de equipos.",
+            "Toma de decisiones estratégicas.",
+            "Habilidades de negociación y persuasión.",
+          ];
+        } else if (jobTitle.toLowerCase().includes("junior")) {
+          return [
+            ...habilidadesBase.slice(0, 3),
+            "Curiosidad y ganas de aprender.",
+            "Flexibilidad y adaptabilidad.",
+            "Responsabilidad y compromiso.",
+          ];
+        } else {
+          return habilidadesBase;
+        }
+      }
+
+      function generateExperience(jobTitle, empresa) {
+        if (jobTitle.toLowerCase().includes("senior")) {
+          return "5+ años de experiencia en el desarrollo de software.";
+        } else if (jobTitle.toLowerCase().includes("semi-senior")) {
+          return "2-5 años de experiencia en el desarrollo de software.";
+        } else if (jobTitle.toLowerCase().includes("junior")) {
+          return "0-2 años de experiencia en el desarrollo de software.";
+        } else if (jobTitle.toLowerCase().includes("experto")) {
+          return "Más de 10 años de experiencia en el desarrollo de software.";
+        } else {
+          return "3+ años de experiencia en el desarrollo de software.";
+        }
+      }
+    </script>
+  </body>
+</html>
