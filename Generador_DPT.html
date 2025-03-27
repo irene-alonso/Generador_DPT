@@ -224,7 +224,7 @@
         }
       }
       function loadDescriptions() {
-        fetch("dpt.json")
+        fetch('https://raw.githubusercontent.com/irene-alonso/Generador_DPT/refs/heads/main/dpt.json?token=GHSAT0AAAAAADBHEHOGEZQKOY6JT5CPPCD6Z7FDTLA')
           .then((response) => {
             if (!response.ok) {
               throw new Error(`HTTP error! status: ${response.status}`);
