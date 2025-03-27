@@ -1,32 +1,21 @@
-<!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Generador de Descripciones de Puesto</title>
-    <script src="dpt.json"></script> <script src="script.js"></script> <style>
-      #descripcion-puesto {
-        margin-bottom: 20px;
-        padding: 10px;
-        border: 1px solid #ccc;
-        border-radius: 5px;
-        min-height: 80px;
-      }
-      #generar-descripcion {
-        padding: 10px 20px;
-        background-color: #4CAF50;
-        color: white;
-        border: none;
-        border-radius: 5px;
-        cursor: pointer;
-      }
-      #generar-descripcion:hover {
-        background-color: #367c39;
-      }
-    </style>
-</head>
-<body>
-    <div id="descripcion-puesto"></div>
-    <button id="generar-descripcion">Generar Descripción</button>
-</body>
-</html>
+const dptDiv = document.getElementById("descripcion-puesto");
+const generarDescripcionBtn = document.getElementById("generar-descripcion");
+
+// Asegúrate de que el nombre de la variable coincida con el nombre que usaste en dpt.json
+const dptPrecargadas = [
+    "Desarrollador de Software Senior: Responsable del diseño, desarrollo y mantenimiento de aplicaciones web complejas.",
+    "Gerente de Proyecto: Lidera la planificación, ejecución y cierre de proyectos, asegurando que se cumplan los objetivos dentro del tiempo y el presupuesto.",
+    "Analista de Datos: Recopila, analiza e interpreta datos para proporcionar información valiosa y apoyar la toma de decisiones.",
+    "Especialista en Marketing Digital: Desarrolla e implementa estrategias de marketing digital para aumentar la visibilidad de la marca y generar leads.",
+    "Representante de Ventas: Identifica y cultiva nuevas oportunidades de negocio, y mantiene relaciones sólidas con los clientes."
+];
+
+function generarDescripcion() {
+    // Aquí iría la lógica para generar una nueva descripción basada en las DPT precargadas
+    // Por ahora, solo mostraremos una DPT aleatoria como ejemplo
+    const indiceAleatorio = Math.floor(Math.random() * dptPrecargadas.length);
+    const descripcionGenerada = dptPrecargadas[indiceAleatorio];
+    dptDiv.textContent = descripcionGenerada;
+}
+
+generarDescripcionBtn.addEventListener("click", generarDescripcion);
