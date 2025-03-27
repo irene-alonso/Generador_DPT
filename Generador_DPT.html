@@ -209,6 +209,50 @@
       );
 
       const empresa = "Applus";
+      // Aquí definimos las descripciones de puesto existentes como un objeto
+      const existingDescriptions = {
+        "Desarrollador de Software Junior": {
+          funciones: [
+            "Participar en el desarrollo de aplicaciones de software.",
+            "Escribir código limpio y eficiente.",
+            "Colaborar con el equipo en el diseño de soluciones.",
+          ],
+          necesidades:
+            "Conocimientos básicos de programación. Capacidad de aprendizaje. Trabajo en equipo.",
+          aptitudes: [
+            "Pensamiento lógico",
+            "Resolución de problemas",
+            "Comunicación",
+          ],
+          experiencia: "0-2 años",
+        },
+        "Analista de Datos": {
+          funciones: [
+            "Recopilar y analizar datos.",
+            "Identificar tendencias y patrones.",
+            "Elaborar informes y visualizaciones.",
+          ],
+          necesidades:
+            "Conocimientos de estadística y bases de datos. Manejo de herramientas de análisis de datos.",
+          aptitudes: [
+            "Pensamiento analítico",
+            "Atención al detalle",
+            "Comunicación",
+          ],
+          experiencia: "2-4 años",
+        },
+        "Gerente de Proyecto": {
+          funciones: [
+            "Planificar, ejecutar y cerrar proyectos.",
+            "Gestionar el equipo y los recursos.",
+            "Comunicar el progreso del proyecto a los stakeholders.",
+          ],
+          necesidades:
+            "Experiencia en gestión de proyectos. Liderazgo. Habilidades de comunicación.",
+          aptitudes: ["Liderazgo", "Organización", "Comunicación", "Negociación"],
+          experiencia: "5+ años",
+        },
+      };
 
       function showError(inputElement, message) {
         const errorDiv = document.getElementById(inputElement.id + "Error");
@@ -230,33 +274,40 @@
       jobProfileForm.addEventListener("submit", (event) => {
         event.preventDefault();
 
-        const jobTitle = document.getElementById("jobTitle");
-        const jobDescription = document.getElementById("jobDescription");
+        const jobTitleInput = document.getElementById("jobTitle");
+        const jobDescriptionInput = document.getElementById("jobDescription");
+        const jobTitle = jobTitleInput.value.trim();
+        const jobDescription = jobDescriptionInput.value.trim();
 
-        if (!jobTitle.value.trim()) {
-          showError(jobTitle, "Por favor, ingrese un título de puesto.");
+
+        if (!jobTitle) {
+          showError(jobTitleInput, "Por favor, ingrese un título de puesto.");
           return;
         } else {
-          hideError(jobTitle);
+          hideError(jobTitleInput);
         }
 
-        if (!jobDescription.value.trim()) {
+        if (!jobDescription) {
           showError(
-            jobDescription,
+            jobDescriptionInput,
             "Por favor, ingrese una descripción del puesto."
           );
           return;
         } else {
-          hideError(jobDescription);
+          hideError(jobDescriptionInput);
         }
 
-        outputJobTitle.textContent = jobTitle.value;
-        outputJobDescription.textContent = jobDescription.value;
+        outputJobTitle.textContent = jobTitle;
+        outputJobDescription.textContent = jobDescription;
 
-        const generatedFunctions = generateFunctions(jobTitle.value, empresa);
-        const generatedNeeds = generateNeeds(jobTitle.value, empresa);
-        const generatedSkills = generateSkills(jobTitle.value, empresa);
-        const generatedExperience = generateExperience(jobTitle.value, empresa);
+        const generatedFunctions = generateFunctions(jobTitle, empresa, existingDescriptions);
+        const generatedNeeds = generateNeeds(jobTitle, empresa, existingDescriptions);
+        const generatedSkills = generateSkills(jobTitle, empresa, existingDescriptions);
+        const generatedExperience = generateExperience(
+          jobTitle,
+          empresa,
+          existingDescriptions
+        );
 
         outputJobFunctionsList.innerHTML = "";
         generatedFunctions.forEach((func) => {
@@ -279,7 +330,7 @@
         resultsDiv.classList.remove("hidden");
       });
 
-      function generateFunctions(jobTitle, empresa) {
+      function generateFunctions(jobTitle, empresa, existingDescriptions) {
         const funcionesBase = [
           `Colaborar con el equipo de ${empresa} para definir los requisitos del proyecto.`,
           `Diseñar, desarrollar y mantener aplicaciones de software para ${empresa}.`,
@@ -289,40 +340,55 @@
           "Mantenerse actualizado sobre las nuevas tecnologías y tendencias.",
         ];
 
+        let funcionesPersonalizadas = [...funcionesBase];
+
+        const puestoExistente = existingDescriptions[jobTitle];
+        if (puestoExistente) {
+          funcionesPersonalizadas = [
+            ...funcionesBase,
+            ...puestoExistente.funciones,
+          ];
+        }
+
         if (jobTitle.toLowerCase().includes("senior")) {
           return [
-            ...funcionesBase,
+            ...funcionesPersonalizadas,
             `Liderar y mentorizar a desarrolladores junior en ${empresa}.`,
             "Tomar decisiones técnicas clave sobre la arquitectura del software.",
             "Optimizar el rendimiento y la escalabilidad de las aplicaciones.",
           ];
         } else if (jobTitle.toLowerCase().includes("junior")) {
           return [
-            ...funcionesBase.slice(0, 3),
+            ...funcionesPersonalizadas.slice(0, 3),
             "Aprender y aplicar las mejores prácticas de desarrollo de software.",
             `Recibir mentoría de desarrolladores senior en ${empresa}.`,
             "Contribuir al desarrollo de funcionalidades de menor complejidad.",
           ];
         } else {
-          return funcionesBase;
+          return funcionesPersonalizadas;
         }
       }
 
-      function generateNeeds(jobTitle, empresa) {
+      function generateNeeds(jobTitle, empresa, existingDescriptions) {
         const needsBase = `Experiencia en el desarrollo de aplicaciones de software para ${empresa}. Conocimientos sólidos de bases de datos y principios de diseño de software.`;
+        let necesidadesPersonalizadas = needsBase;
+        const puestoExistente = existingDescriptions[jobTitle];
 
+        if (puestoExistente) {
+          necesidadesPersonalizadas = puestoExistente.necesidades;
+        }
         if (jobTitle.toLowerCase().includes("full stack")) {
-          return `${needsBase} Experiencia en el desarrollo de aplicaciones web tanto en el lado del cliente como del servidor. Conocimientos sólidos de bases de datos, APIs y frameworks de desarrollo web.`;
+          return `${necesidadesPersonalizadas} Experiencia en el desarrollo de aplicaciones web tanto en el lado del cliente como del servidor. Conocimientos sólidos de bases de datos, APIs y frameworks de desarrollo web.`;
         } else if (jobTitle.toLowerCase().includes("frontend")) {
-          return `${needsBase} Experiencia en el desarrollo de interfaces de usuario con HTML, CSS y JavaScript. Conocimiento de frameworks de JavaScript modernos como React, Angular o Vue.js.`;
+          return `${necesidadesPersonalizadas} Experiencia en el desarrollo de interfaces de usuario con HTML, CSS y JavaScript. Conocimiento de frameworks de JavaScript modernos como React, Angular o Vue.js.`;
         } else if (jobTitle.toLowerCase().includes("backend")) {
-          return `${needsBase} Experiencia en el desarrollo de la lógica del servidor con lenguajes como Java, Python o Node.js. Conocimientos sólidos de bases de datos y APIs REST.`;
+          return `${necesidadesPersonalizadas} Experiencia en el desarrollo de la lógica del servidor con lenguajes como Java, Python o Node.js. Conocimientos sólidos de bases de datos y APIs REST.`;
         } else {
-          return needsBase;
+          return necesidadesPersonalizadas;
         }
       }
 
-      function generateSkills(jobTitle, empresa) {
+      function generateSkills(jobTitle, empresa, existingDescriptions) {
         const habilidadesBase = [
           "Pensamiento analítico y resolución de problemas.",
           "Atención al detalle y capacidad de organización.",
@@ -330,37 +396,47 @@
           "Proactividad e iniciativa.",
           "Capacidad de aprendizaje y adaptación.",
         ];
+        let habilidadesPersonalizadas = [...habilidadesBase];
+        const puestoExistente = existingDescriptions[jobTitle];
+        if (puestoExistente) {
+          habilidadesPersonalizadas = [...habilidadesBase, ...puestoExistente.aptitudes];
+        }
 
         if (jobTitle.toLowerCase().includes("lider")) {
           return [
-            ...habilidadesBase,
+            ...habilidadesPersonalizadas,
             "Liderazgo y gestión de equipos.",
             "Toma de decisiones estratégicas.",
             "Habilidades de negociación y persuasión.",
           ];
         } else if (jobTitle.toLowerCase().includes("junior")) {
           return [
-            ...habilidadesBase.slice(0, 3),
+            ...habilidadesPersonalizadas.slice(0, 3),
             "Curiosidad y ganas de aprender.",
             "Flexibilidad y adaptabilidad.",
             "Responsabilidad y compromiso.",
           ];
         } else {
-          return habilidadesBase;
+          return habilidadesPersonalizadas;
         }
       }
 
-      function generateExperience(jobTitle, empresa) {
+      function generateExperience(jobTitle, empresa, existingDescriptions) {
+        let experienciaPersonalizada = "";
+        const puestoExistente = existingDescriptions[jobTitle];
+        if (puestoExistente) {
+          experienciaPersonalizada = puestoExistente.experiencia;
+        }
         if (jobTitle.toLowerCase().includes("senior")) {
-          return "5+ años de experiencia en el desarrollo de software.";
+          return experienciaPersonalizada || "5+ años de experiencia en el desarrollo de software.";
         } else if (jobTitle.toLowerCase().includes("semi-senior")) {
-          return "2-5 años de experiencia en el desarrollo de software.";
+          return experienciaPersonalizada || "2-5 años de experiencia en el desarrollo de software.";
         } else if (jobTitle.toLowerCase().includes("junior")) {
-          return "0-2 años de experiencia en el desarrollo de software.";
+          return experienciaPersonalizada || "0-2 años de experiencia en el desarrollo de software.";
         } else if (jobTitle.toLowerCase().includes("experto")) {
-          return "Más de 10 años de experiencia en el desarrollo de software.";
+          return experienciaPersonalizada || "Más de 10 años de experiencia en el desarrollo de software.";
         } else {
-          return "3+ años de experiencia en el desarrollo de software.";
+          return experienciaPersonalizada || "3+ años de experiencia en el desarrollo de software.";
         }
       }
     </script>
