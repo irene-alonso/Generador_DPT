@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Generador de Perfiles de Puesto</title>
+    <title>Generador de Perfiles de Puesto con IA</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet" />
     <style>
       /* Estilos generales */
@@ -118,7 +118,7 @@
   <body class="bg-gray-100 font-inter antialiased">
     <div class="container">
       <h1 class="text-3xl font-semibold text-blue-600 text-center mb-6">
-        Generador de Perfiles de Puesto
+        Generador de Perfiles de Puesto con IA
       </h1>
 
       <div class="bg-white rounded-lg shadow-md p-8">
@@ -206,7 +206,7 @@
       const outputExperienceLevel = document.getElementById(
         "outputExperienceLevel"
       );
-      const empresa = "Applus";
+      const empresa = "NombreDeTuEmpresa"; // Reemplaza con el nombre de tu empresa
       let existingDescriptions = {};
       function showError(inputElement, message) {
         const errorDiv = document.getElementById(inputElement.id + "Error");
@@ -224,7 +224,7 @@
         }
       }
       function loadDescriptions() {
-        fetch('https://raw.githubusercontent.com/irene-alonso/Generador_DPT/refs/heads/main/dpt.json?token=GHSAT0AAAAAADBHEHOGEZQKOY6JT5CPPCD6Z7FDTLA')
+        fetch('https://raw.githubusercontent.com/IreneAlonso/Generador_DPT/main/dpt.json?token=GHSAT0AAAAAADBHEHOGEZQKOY6JT5CPPCD6Z7FDTLA') // Reemplaza con la URL de tu archivo dpt.json
           .then((response) => {
             if (!response.ok) {
               throw new Error(`HTTP error! status: ${response.status}`);
@@ -265,43 +265,176 @@
         }
         outputJobTitle.textContent = jobTitle;
         outputJobDescription.textContent = jobDescription;
-        const generatedFunctions = generateFunctions(
-          jobTitle,
-          empresa,
-          existingDescriptions
-        );
-        const generatedNeeds = generateNeeds(
-          jobTitle,
-          empresa,
-          existingDescriptions
-        );
-        const generatedSkills = generateSkills(
-          jobTitle,
-          empresa,
-          existingDescriptions
-        );
-        const generatedExperience = generateExperience(
-          jobTitle,
-          empresa,
-          existingDescriptions
-        );
-        outputJobFunctionsList.innerHTML = "";
-        generatedFunctions.forEach((func) => {
-          const li = document.createElement("li");
-          li.textContent = func;
-          outputJobFunctionsList.appendChild(li);
-        });
-        outputJobNeeds.textContent = generatedNeeds;
-        outputJobSkillsList.innerHTML = "";
-        generatedSkills.forEach((skill) => {
-          const li = document.createElement("li");
-          li.textContent = skill;
-          outputJobSkillsList.appendChild(li);
-        });
-        outputExperienceLevel.textContent = generatedExperience;
-        resultsDiv.classList.remove("hidden");
+        generateAIProfile(jobTitle, jobDescription)
+          .then(aiResponse => {
+            const generatedFunctions = generateFunctions(
+              jobTitle,
+              empresa,
+              existingDescriptions,
+              aiResponse
+            );
+            const generatedNeeds = generateNeeds(
+              jobTitle,
+              empresa,
+              existingDescriptions,
+              aiResponse
+            );
+            const generatedSkills = generateSkills(
+              jobTitle,
+              empresa,
+              existingDescriptions,
+              aiResponse
+            );
+            const generatedExperience = generateExperience(
+              jobTitle,
+              empresa,
+              existingDescriptions,
+              aiResponse
+            );
+
+            outputJobFunctionsList.innerHTML = "";
+            generatedFunctions.forEach((func) => {
+              const li = document.createElement("li");
+              li.textContent = func;
+              outputJobFunctionsList.appendChild(li);
+            });
+            outputJobNeeds.textContent = generatedNeeds;
+            outputJobSkillsList.innerHTML = "";
+            generatedSkills.forEach((skill) => {
+              const li = document.createElement("li");
+              li.textContent = skill;
+              outputJobSkillsList.appendChild(li);
+            });
+            outputExperienceLevel.textContent = generatedExperience;
+            resultsDiv.classList.remove("hidden");
+          })
+          .catch(error => {
+            console.error("Error al generar el perfil con IA:", error);
+            alert("No se pudo generar el perfil del puesto con la IA. Se mostrará la versión básica.");
+            // Mostrar la versión básica del perfil del puesto
+            const generatedFunctions = generateFunctions(jobTitle, empresa, existingDescriptions);
+            const generatedNeeds = generateNeeds(jobTitle, empresa, existingDescriptions);
+            const generatedSkills = generateSkills(jobTitle, empresa, existingDescriptions);
+            const generatedExperience = generateExperience(jobTitle, empresa, existingDescriptions);
+
+            outputJobFunctionsList.innerHTML = "";
+            generatedFunctions.forEach((func) => {
+              const li = document.createElement("li");
+              li.textContent = func;
+              outputJobFunctionsList.appendChild(li);
+            });
+            outputJobNeeds.textContent = generatedNeeds;
+            outputJobSkillsList.innerHTML = "";
+            generatedSkills.forEach((skill) => {
+              const li = document.createElement("li");
+              li.textContent = skill;
+              outputJobSkillsList.appendChild(li);
+            });
+            outputExperienceLevel.textContent = generatedExperience;
+            resultsDiv.classList.remove("hidden");
+          });
       });
-      function generateFunctions(jobTitle, empresa, existingDescriptions) {
+      async function generateAIProfile(jobTitle, jobDescription) {
+        // Llamada a Hugging Face Inference API
+        const API_TOKEN = "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"; // Reemplaza con tu token de Hugging Face
+        const modelName = "mistralai/Mixtral-8x7B-Instruct-v0.1"; // Elige un modelo adecuado
+
+        const payload = {
+          inputs: `Genera un perfil de puesto detallado para ${jobTitle} con la siguiente descripción: ${jobDescription}`,
+          parameters: {
+            max_length: 500,
+            temperature: 0.7,
+            repetition_penalty: 1.1,
+          },
+        };
+
+        try {
+          const response = await fetch(
+            `https://api-inference.huggingface.co/models/${modelName}`,
+            {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+                Authorization: `Bearer ${API_TOKEN}`,
+              },
+              body: JSON.stringify(payload),
+            }
+          );
+
+          if (!response.ok) {
+            throw new Error(`Error de la API de Hugging Face: ${response.statusText}`);
+          }
+          const data = await response.json();
+          const aiResponse = {
+                funciones: extractFunctions(data[0].generated_text),
+                necesidades: extractNeeds(data[0].generated_text),
+                aptitudes: extractSkills(data[0].generated_text),
+                experiencia: extractExperience(data[0].generated_text)
+          };
+          return aiResponse;
+
+        } catch (error) {
+          console.error("Error al obtener la descripción del puesto de la API de Hugging Face:", error);
+          throw error; // Reenvía el error para que lo capture el .catch del formulario
+        }
+      }
+      function extractFunctions(text) {
+        const startMarker = "Funciones del Puesto:";
+        const endMarker = "Necesidades del Puesto:";
+        const startIndex = text.indexOf(startMarker);
+        const endIndex = text.indexOf(endMarker);
+
+        if (startIndex === -1 || endIndex === -1) {
+            return [];
+        }
+
+        const functionsText = text.substring(startIndex + startMarker.length, endIndex).trim();
+        const functions = functionsText.split("\n").filter(func => func.trim() !== "").map(func => func.replace(/^- /, '')).filter(Boolean);
+        return functions;
+      }
+
+      function extractNeeds(text) {
+          const startMarker = "Necesidades del Puesto:";
+          const endMarker = "Aptitudes Requeridas:";
+          const startIndex = text.indexOf(startMarker);
+          const endIndex = text.indexOf(endMarker);
+
+          if (startIndex === -1 || endIndex === -1) {
+              return "";
+          }
+
+          return text.substring(startIndex + startMarker.length, endIndex).trim();
+      }
+
+      function extractSkills(text) {
+          const startMarker = "Aptitudes Requeridas:";
+          const endMarker = "Nivel de Experiencia:";
+          const startIndex = text.indexOf(startMarker);
+          const endIndex = text.indexOf(endMarker);
+
+          if (startIndex === -1 || endIndex === -1) {
+              return [];
+          }
+
+        const skillsText = text.substring(startIndex + startMarker.length, endIndex).trim();
+        const skills = skillsText.split("\n").filter(skill => skill.trim() !== "").map(skill => skill.replace(/^- /, '')).filter(Boolean);
+        return skills;
+      }
+
+      function extractExperience(text) {
+          const startMarker = "Nivel de Experiencia:";
+          const startIndex = text.indexOf(startMarker);
+
+          if (startIndex === -1) {
+              return "";
+          }
+
+          return text.substring(startIndex + startMarker.length).trim();
+      }
+      function generateFunctions(jobTitle, empresa, existingDescriptions, aiResponse) {
+        if (aiResponse && aiResponse.funciones) {
+          return aiResponse.funciones;
+        }
         const funcionesBase = [
           `Colaborar con el equipo de ${empresa} para definir los requisitos del proyecto.`,
           `Diseñar, desarrollar y mantener aplicaciones de software para ${empresa}.`,
@@ -312,7 +445,7 @@
         ];
         let funcionesPersonalizadas = [...funcionesBase];
         const puestoExistente = existingDescriptions[jobTitle];
-        if (puestoExistente) {
+        if (puestoExistente && puestoExistente.funciones) {
           funcionesPersonalizadas = [
             ...funcionesBase,
             ...puestoExistente.funciones,
@@ -336,11 +469,14 @@
           return funcionesPersonalizadas;
         }
       }
-      function generateNeeds(jobTitle, empresa, existingDescriptions) {
+      function generateNeeds(jobTitle, empresa, existingDescriptions, aiResponse) {
+        if (aiResponse && aiResponse.necesidades) {
+          return aiResponse.necesidades;
+        }
         const needsBase = `Experiencia en el desarrollo de aplicaciones de software para ${empresa}. Conocimientos sólidos de bases de datos y principios de diseño de software.`;
         let necesidadesPersonalizadas = needsBase;
         const puestoExistente = existingDescriptions[jobTitle];
-        if (puestoExistente) {
+        if (puestoExistente && puestoExistente.necesidades) {
           necesidadesPersonalizadas = puestoExistente.necesidades;
         }
         if (jobTitle.toLowerCase().includes("full stack")) {
@@ -353,7 +489,10 @@
           return necesidadesPersonalizadas;
         }
       }
-      function generateSkills(jobTitle, empresa, existingDescriptions) {
+      function generateSkills(jobTitle, empresa, existingDescriptions, aiResponse) {
+        if (aiResponse && aiResponse.aptitudes) {
+          return aiResponse.aptitudes;
+        }
         const habilidadesBase = [
           "Pensamiento analítico y resolución de problemas.",
           "Atención al detalle y capacidad de organización.",
@@ -363,7 +502,7 @@
         ];
         let habilidadesPersonalizadas = [...habilidadesBase];
         const puestoExistente = existingDescriptions[jobTitle];
-        if (puestoExistente) {
+        if (puestoExistente && puestoExistente.aptitudes) {
           habilidadesPersonalizadas = [
             ...habilidadesBase,
             ...puestoExistente.aptitudes,
@@ -387,10 +526,13 @@
           return habilidadesPersonalizadas;
         }
       }
-      function generateExperience(jobTitle, empresa, existingDescriptions) {
+      function generateExperience(jobTitle, empresa, existingDescriptions, aiResponse) {
+        if (aiResponse && aiResponse.experiencia) {
+          return aiResponse.experiencia;
+        }
         let experienciaPersonalizada = "";
         const puestoExistente = existingDescriptions[jobTitle];
-        if (puestoExistente) {
+        if (puestoExistente && puestoExistente.experiencia) {
           experienciaPersonalizada = puestoExistente.experiencia;
         }
         if (jobTitle.toLowerCase().includes("senior")) {
