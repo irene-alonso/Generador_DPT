@@ -9,7 +9,7 @@
       /* Estilos generales */
       body {
         font-family: 'Inter', sans-serif;
-        background-color: #f9f9f9;
+        background-color: #f3f0e8; /* Color de fondo claro */
         color: #333;
         margin: 0;
         padding: 0;
@@ -22,7 +22,7 @@
       h1 {
         font-size: 2.5rem;
         font-weight: bold;
-        color: #007bff;
+        color: #ff6600; /* Naranja Applus */
         text-align: center;
         margin-bottom: 2rem;
       }
@@ -56,15 +56,15 @@
       textarea:focus,
       select:focus {
         outline: none;
-        border-color: #007bff;
-        box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.1);
+        border-color: #ff6600; /* Naranja Applus */
+        box-shadow: 0 0 0 3px rgba(255, 102, 0, 0.1);
       }
       textarea {
         resize: vertical;
         height: 8rem;
       }
       button {
-        background-color: #007bff;
+        background-color: #ff6600; /* Naranja Applus */
         color: #fff;
         padding: 0.75rem 1.5rem;
         border: none;
@@ -76,14 +76,15 @@
         width: 100%;
       }
       button:hover {
-        background-color: #0056b3;
+        background-color: #cc5200; /* Naranja más oscuro */
       }
       #results {
         margin-top: 2rem;
         padding: 1.5rem;
-        background-color: #ecf0f1;
+        background-color: #fff; /* Fondo blanco para los resultados */
         border-radius: 0.5rem;
         border: 1px solid #bdc3c7;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Sombra suave */
       }
       #results h2 {
         font-size: 1.5rem;
@@ -113,10 +114,30 @@
         font-size: 0.9rem;
         margin-top: 0.5rem;
       }
+      #loading {
+        display: none;
+        text-align: center;
+        margin-top: 1rem;
+        color: #ff6600; /* Naranja Applus */
+        font-size: 1.2rem;
+        font-weight: bold;
+      }
+      .logo-applus {
+        display: block;
+        margin-left: auto;
+        margin-right: auto;
+        width: 150px; /* Ajusta el ancho del logo según sea necesario */
+        margin-bottom: 1rem;
+      }
     </style>
   </head>
   <body class="bg-gray-100 font-inter antialiased">
     <div class="container">
+      <img
+        src="https://www.applus.com/global/images/logo.svg"
+        alt="Applus Logo"
+        class="logo-applus"
+      />
       <h1 class="text-3xl font-semibold text-blue-600 text-center mb-6">
         Generador de Perfiles de Puesto con IA
       </h1>
@@ -124,7 +145,10 @@
       <div class="bg-white rounded-lg shadow-md p-8">
         <form id="jobProfileForm" class="space-y-6">
           <div>
-            <label for="jobTitle" class="block text-gray-700 text-sm font-bold mb-2">
+            <label
+              for="jobTitle"
+              class="block text-gray-700 text-sm font-bold mb-2"
+            >
               Título del Puesto:
             </label>
             <input
@@ -140,7 +164,10 @@
           </div>
 
           <div>
-            <label for="jobDescription" class="block text-gray-700 text-sm font-bold mb-2">
+            <label
+              for="jobDescription"
+              class="block text-gray-700 text-sm font-bold mb-2"
+            >
               Descripción del Puesto:
             </label>
             <textarea
@@ -153,8 +180,8 @@
               Por favor, ingrese una descripción del puesto.
             </div>
             <p class="text-gray-500 text-xs italic">
-              Proporcione una descripción breve del propósito y las responsabilidades
-              generales del puesto.
+              Proporcione una descripción breve del propósito y las
+              responsabilidades generales del puesto.
             </p>
           </div>
 
@@ -166,16 +193,27 @@
           </button>
         </form>
 
-        <div id="results" class="mt-8 p-6 bg-gray-50 rounded-lg shadow-sm border border-gray-200 hidden">
+        <div id="loading" class="hidden">
+          <p>Pensando...</p>
+        </div>
+
+        <div
+          id="results"
+          class="mt-8 p-6 bg-gray-50 rounded-lg shadow-sm border border-gray-200 hidden"
+        >
           <h2 class="text-2xl font-semibold text-gray-800 mb-4">
             Perfil de Puesto Generado
           </h2>
           <div id="jobProfileOutput" class="space-y-4">
-            <h3 class="text-xl font-semibold text-blue-600">Título del Puesto:</h3>
+            <h3 class="text-xl font-semibold text-blue-600">
+              Título del Puesto:
+            </h3>
             <p id="outputJobTitle" class="text-gray-700"></p>
             <h3 class="text-xl font-semibold text-blue-600">Descripción:</h3>
             <p id="outputJobDescription" class="text-gray-700"></p>
-            <h3 class="text-xl font-semibold text-blue-600">Funciones del Puesto:</h3>
+            <h3 class="text-xl font-semibold text-blue-600">
+              Funciones del Puesto:
+            </h3>
             <ul id="outputJobFunctions" class="list-disc list-inside text-gray-700"></ul>
             <h3 class="text-xl font-semibold text-blue-600">
               Necesidades del Puesto:
@@ -197,7 +235,9 @@
       const jobProfileForm = document.getElementById("jobProfileForm");
       const resultsDiv = document.getElementById("results");
       const outputJobTitle = document.getElementById("outputJobTitle");
-      const outputJobDescription = document.getElementById("outputJobDescription");
+      const outputJobDescription = document.getElementById(
+        "outputJobDescription"
+      );
       const outputJobFunctionsList = document.getElementById(
         "outputJobFunctions"
       );
@@ -206,8 +246,10 @@
       const outputExperienceLevel = document.getElementById(
         "outputExperienceLevel"
       );
-      const empresa = "NombreDeTuEmpresa"; // Reemplaza con el nombre de tu empresa
+      const empresa = "Applus"; // Nombre de la empresa
       let existingDescriptions = {};
+      const loadingDiv = document.getElementById("loading");
+
       function showError(inputElement, message) {
         const errorDiv = document.getElementById(inputElement.id + "Error");
         if (errorDiv) {
@@ -224,7 +266,9 @@
         }
       }
       function loadDescriptions() {
-        fetch('https://raw.githubusercontent.com/IreneAlonso/Generador_DPT/main/dpt.json?token=GHSAT0AAAAAADBHEHOGEZQKOY6JT5CPPCD6Z7FDTLA') // Reemplaza con la URL de tu archivo dpt.json
+        fetch(
+          "https://raw.githubusercontent.com/IreneAlonso/Generador_DPT/main/dpt.json?token=GHSAT0AAAAAADBHEHOGEZQKOY6JT5CPPCD6Z7FDTLA"
+        ) // Reemplaza con la URL de tu archivo dpt.json
           .then((response) => {
             if (!response.ok) {
               throw new Error(`HTTP error! status: ${response.status}`);
@@ -265,8 +309,11 @@
         }
         outputJobTitle.textContent = jobTitle;
         outputJobDescription.textContent = jobDescription;
+        loadingDiv.style.display = "block"; // Mostrar "Pensando..."
+        resultsDiv.classList.add("hidden"); // Ocultar resultados anteriores
+
         generateAIProfile(jobTitle, jobDescription)
-          .then(aiResponse => {
+          .then((aiResponse) => {
             const generatedFunctions = generateFunctions(
               jobTitle,
               empresa,
@@ -307,15 +354,34 @@
             });
             outputExperienceLevel.textContent = generatedExperience;
             resultsDiv.classList.remove("hidden");
+            loadingDiv.style.display = "none"; // Ocultar "Pensando..."
           })
-          .catch(error => {
+          .catch((error) => {
             console.error("Error al generar el perfil con IA:", error);
-            alert("No se pudo generar el perfil del puesto con la IA. Se mostrará la versión básica.");
+            alert(
+              "No se pudo generar el perfil del puesto con la IA. Se mostrará la versión básica."
+            );
             // Mostrar la versión básica del perfil del puesto
-            const generatedFunctions = generateFunctions(jobTitle, empresa, existingDescriptions);
-            const generatedNeeds = generateNeeds(jobTitle, empresa, existingDescriptions);
-            const generatedSkills = generateSkills(jobTitle, empresa, existingDescriptions);
-            const generatedExperience = generateExperience(jobTitle, empresa, existingDescriptions);
+            const generatedFunctions = generateFunctions(
+              jobTitle,
+              empresa,
+              existingDescriptions
+            );
+            const generatedNeeds = generateNeeds(
+              jobTitle,
+              empresa,
+              existingDescriptions
+            );
+            const generatedSkills = generateSkills(
+              jobTitle,
+              empresa,
+              existingDescriptions
+            );
+            const generatedExperience = generateExperience(
+              jobTitle,
+              empresa,
+              existingDescriptions
+            );
 
             outputJobFunctionsList.innerHTML = "";
             generatedFunctions.forEach((func) => {
@@ -332,6 +398,7 @@
             });
             outputExperienceLevel.textContent = generatedExperience;
             resultsDiv.classList.remove("hidden");
+            loadingDiv.style.display = "none"; // Ocultar "Pensando..."
           });
       });
       async function generateAIProfile(jobTitle, jobDescription) {
@@ -362,19 +429,23 @@
           );
 
           if (!response.ok) {
-            throw new Error(`Error de la API de Hugging Face: ${response.statusText}`);
+            throw new Error(
+              `Error de la API de Hugging Face: ${response.statusText}`
+            );
           }
           const data = await response.json();
           const aiResponse = {
-                funciones: extractFunctions(data[0].generated_text),
-                necesidades: extractNeeds(data[0].generated_text),
-                aptitudes: extractSkills(data[0].generated_text),
-                experiencia: extractExperience(data[0].generated_text)
+            funciones: extractFunctions(data[0].generated_text),
+            necesidades: extractNeeds(data[0].generated_text),
+            aptitudes: extractSkills(data[0].generated_text),
+            experiencia: extractExperience(data[0].generated_text),
           };
           return aiResponse;
-
         } catch (error) {
-          console.error("Error al obtener la descripción del puesto de la API de Hugging Face:", error);
+          console.error(
+            "Error al obtener la descripción del puesto de la API de Hugging Face:",
+            error
+          );
           throw error; // Reenvía el error para que lo capture el .catch del formulario
         }
       }
@@ -385,53 +456,70 @@
         const endIndex = text.indexOf(endMarker);
 
         if (startIndex === -1 || endIndex === -1) {
-            return [];
+          return [];
         }
 
-        const functionsText = text.substring(startIndex + startMarker.length, endIndex).trim();
-        const functions = functionsText.split("\n").filter(func => func.trim() !== "").map(func => func.replace(/^- /, '')).filter(Boolean);
+        const functionsText = text
+          .substring(startIndex + startMarker.length, endIndex)
+          .trim();
+        const functions = functionsText
+          .split("\n")
+          .filter((func) => func.trim() !== "")
+          .map((func) => func.replace(/^- /, ""))
+          .filter(Boolean);
         return functions;
       }
 
       function extractNeeds(text) {
-          const startMarker = "Necesidades del Puesto:";
-          const endMarker = "Aptitudes Requeridas:";
-          const startIndex = text.indexOf(startMarker);
-          const endIndex = text.indexOf(endMarker);
+        const startMarker = "Necesidades del Puesto:";
+        const endMarker = "Aptitudes Requeridas:";
+        const startIndex = text.indexOf(startMarker);
+        const endIndex = text.indexOf(endMarker);
 
-          if (startIndex === -1 || endIndex === -1) {
-              return "";
-          }
+        if (startIndex === -1 || endIndex === -1) {
+          return "";
+        }
 
-          return text.substring(startIndex + startMarker.length, endIndex).trim();
+        return text.substring(startIndex + startMarker.length, endIndex).trim();
       }
 
       function extractSkills(text) {
-          const startMarker = "Aptitudes Requeridas:";
-          const endMarker = "Nivel de Experiencia:";
-          const startIndex = text.indexOf(startMarker);
-          const endIndex = text.indexOf(endMarker);
+        const startMarker = "Aptitudes Requeridas:";
+        const endMarker = "Nivel de Experiencia:";
+        const startIndex = text.indexOf(startMarker);
+        const endIndex = text.indexOf(endMarker);
 
-          if (startIndex === -1 || endIndex === -1) {
-              return [];
-          }
+        if (startIndex === -1 || endIndex === -1) {
+          return [];
+        }
 
-        const skillsText = text.substring(startIndex + startMarker.length, endIndex).trim();
-        const skills = skillsText.split("\n").filter(skill => skill.trim() !== "").map(skill => skill.replace(/^- /, '')).filter(Boolean);
+        const skillsText = text
+          .substring(startIndex + startMarker.length, endIndex)
+          .trim();
+        const skills = skillsText
+          .split("\n")
+          .filter((skill) => skill.trim() !== "")
+          .map((skill) => skill.replace(/^- /, ""))
+          .filter(Boolean);
         return skills;
       }
 
       function extractExperience(text) {
-          const startMarker = "Nivel de Experiencia:";
-          const startIndex = text.indexOf(startMarker);
+        const startMarker = "Nivel de Experiencia:";
+        const startIndex = text.indexOf(startMarker);
 
-          if (startIndex === -1) {
-              return "";
-          }
+        if (startIndex === -1) {
+          return "";
+        }
 
-          return text.substring(startIndex + startMarker.length).trim();
+        return text.substring(startIndex + startMarker.length).trim();
       }
-      function generateFunctions(jobTitle, empresa, existingDescriptions, aiResponse) {
+      function generateFunctions(
+        jobTitle,
+        empresa,
+        existingDescriptions,
+        aiResponse
+      ) {
         if (aiResponse && aiResponse.funciones) {
           return aiResponse.funciones;
         }
@@ -469,7 +557,12 @@
           return funcionesPersonalizadas;
         }
       }
-      function generateNeeds(jobTitle, empresa, existingDescriptions, aiResponse) {
+      function generateNeeds(
+        jobTitle,
+        empresa,
+        existingDescriptions,
+        aiResponse
+      ) {
         if (aiResponse && aiResponse.necesidades) {
           return aiResponse.necesidades;
         }
@@ -489,7 +582,12 @@
           return necesidadesPersonalizadas;
         }
       }
-      function generateSkills(jobTitle, empresa, existingDescriptions, aiResponse) {
+      function generateSkills(
+        jobTitle,
+        empresa,
+        existingDescriptions,
+        aiResponse
+      ) {
         if (aiResponse && aiResponse.aptitudes) {
           return aiResponse.aptitudes;
         }
@@ -526,7 +624,12 @@
           return habilidadesPersonalizadas;
         }
       }
-      function generateExperience(jobTitle, empresa, existingDescriptions, aiResponse) {
+      function generateExperience(
+        jobTitle,
+        empresa,
+        existingDescriptions,
+        aiResponse
+      ) {
         if (aiResponse && aiResponse.experiencia) {
           return aiResponse.experiencia;
         }
@@ -537,8 +640,7 @@
         }
         if (jobTitle.toLowerCase().includes("senior")) {
           return (
-            experienciaPersonalizada ||
-            "5+ años de experiencia en el desarrollo de software."
+            experienciaPersonalizada || "5+ años de experiencia en el desarrollo de software."
           );
         } else if (jobTitle.toLowerCase().includes("semi-senior")) {
           return (
@@ -547,21 +649,4 @@
           );
         } else if (jobTitle.toLowerCase().includes("junior")) {
           return (
-            experienciaPersonalizada ||
-            "0-2 años de experiencia en el desarrollo de software."
-          );
-        } else if (jobTitle.toLowerCase().includes("experto")) {
-          return (
-            experienciaPersonalizada ||
-            "Más de 10 años de experiencia en el desarrollo de software."
-          );
-        } else {
-          return (
-            experienciaPersonalizada ||
-            "3+ años de experiencia en el desarrollo de software."
-          );
-        }
-      }
-    </script>
-  </body>
-</html>
+            experienciaPersonaliz
